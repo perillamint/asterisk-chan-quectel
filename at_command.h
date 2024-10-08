@@ -61,12 +61,12 @@
 	_( AT_D,            "AT+CPCMREG=0;D") \
 \
 	_( AT_DDSETEX,      "AT+CPCMREG=1") \
-        _( AT_DDSETEX0,     "AT+CPCMREG=0") \
+	_( AT_DDSETEX0,     "AT+CPCMREG=0") \
 	_( AT_DTMF,         "AT^DTMF") \
 	_( AT_E,            "ATE") \
 \
 	_( AT_U2DIAG,       "AT^U2DIAG") \
-	_( AT_Z,            "ATZ") \
+	_( AT_DSCI,         "AT^DSCI=1") \
 	_( AT_CMEE,         "AT+CMEE") \
 	_( AT_CSCA,         "AT+CSCA") \
 \

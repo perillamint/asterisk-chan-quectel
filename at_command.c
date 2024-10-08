@@ -118,7 +118,7 @@ EXPORT_DEF int at_enqueue_initialization(struct cpvt *cpvt, at_cmd_t from_comman
 	static const char cmd7[] = "AT+CGMM\r";
 	static const char cmd8[] = "AT+CGMR\r";
 
-	static const char cmd9[] = "AT+CMEE=0\r";
+//	static const char cmd9[] = "AT+CMEE=0\r";
 	static const char cmd10[] = "AT+CGSN\r";
 	static const char cmd11[] = "AT+CIMI\r";
 	static const char cmd12[] = "AT+CPIN?\r";
@@ -141,14 +141,14 @@ EXPORT_DEF int at_enqueue_initialization(struct cpvt *cpvt, at_cmd_t from_comman
 
 	static const at_queue_cmd_t st_cmds[] = {
 		ATQ_CMD_DECLARE_ST(CMD_AT, cmd_at),
-		ATQ_CMD_DECLARE_ST(CMD_AT_Z, cmd2),		/* optional,  reload configuration */
+		ATQ_CMD_DECLARE_ST(CMD_AT_DSCI, cmd2),
 		ATQ_CMD_DECLARE_ST(CMD_AT_E, cmd3),		/* disable echo */
 		ATQ_CMD_DECLARE_DYN(CMD_AT_U2DIAG),		/* optional, Enable or disable some devices */
 		ATQ_CMD_DECLARE_ST(CMD_AT_CGMI, cmd5),		/* Getting manufacturer info */
 
 		ATQ_CMD_DECLARE_ST(CMD_AT_CGMM, cmd7),		/* Get Product name */
 		ATQ_CMD_DECLARE_ST(CMD_AT_CGMR, cmd8),		/* Get software version */
-		ATQ_CMD_DECLARE_ST(CMD_AT_CMEE, cmd9),		/* set MS Error Report to 'ERROR' only  TODO: change to 1 or 2 and add support in response handlers */
+//		ATQ_CMD_DECLARE_ST(CMD_AT_CMEE, cmd9),		/* set MS Error Report to 'ERROR' only  TODO: change to 1 or 2 and add support in response handlers */
 
 		ATQ_CMD_DECLARE_ST(CMD_AT_CGSN, cmd10),		/* IMEI Read */
 		ATQ_CMD_DECLARE_ST(CMD_AT_CIMI, cmd11),		/* IMSI Read */
@@ -190,21 +190,31 @@ EXPORT_DEF int at_enqueue_initialization(struct cpvt *cpvt, at_cmd_t from_comman
 				continue;
 		}
 
-		if(st_cmds[in].cmd == CMD_AT_Z && !CONF_SHARED(pvt, resetquectel))
-			continue;
-		if(st_cmds[in].cmd == CMD_AT_U2DIAG && CONF_SHARED(pvt, u2diag) == -1)
-			continue;
+		if ((st_cmds[in].cmd == CMD_AT_COPS_INIT
+			|| st_cmds[in].cmd == CMD_AT_CREG_INIT
+		) && !CONF_SHARED(pvt, resetquectel)) continue;
+
+		if ((st_cmds[in].cmd == CMD_AT_CSCA
+			|| st_cmds[in].cmd == CMD_AT_CSSN
+			|| st_cmds[in].cmd == CMD_AT_CMGF
+			|| st_cmds[in].cmd == CMD_AT_CSCS
+			|| st_cmds[in].cmd == CMD_AT_CPMS
+			|| st_cmds[in].cmd == CMD_AT_CNMI
+		) && CONF_SHARED(pvt, disablesms)) continue;
+
+		if (st_cmds[in].cmd == CMD_AT_U2DIAG
+			&& CONF_SHARED(pvt, u2diag) == -1) continue;
 
 		memcpy(&cmds[out], &st_cmds[in], sizeof(st_cmds[in]));
 
-		if(cmds[out].cmd == CMD_AT_U2DIAG)
-		{
+		if (cmds[out].cmd == CMD_AT_U2DIAG) {
 			err = at_fill_generic_cmd(&cmds[out], "AT^U2DIAG=%d\r", CONF_SHARED(pvt, u2diag));
 			if(err)
 				goto failure;
 			ptmp1 = cmds[out].data;
 		}
-		if(cmds[out].cmd == from_command)
+
+		if (cmds[out].cmd == from_command)
 			begin = out;
 		out++;
 	}
@@ -260,8 +270,8 @@ static int at_enqueue_pdu(struct cpvt *cpvt, const char *pdu, size_t length, siz
 
 	at_cmd[0].length = snprintf(buf, sizeof(buf), "AT+CMGS=%d\r", (int)tpdulen);
 	at_cmd[0].data = ast_strdup(buf);
-	if(!at_cmd[0].data)
-	{
+
+	if (!at_cmd[0].data) {
 		ast_free(at_cmd[1].data);
 		return -ENOMEM;
 	}

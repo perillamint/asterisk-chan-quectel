@@ -182,7 +182,7 @@ static int at_response_ok (struct pvt* pvt, at_res_t res)
 		switch (ecmd->cmd)
 		{
 			case CMD_AT:
-			case CMD_AT_Z:
+			case CMD_AT_DSCI:
 			case CMD_AT_E:
 			case CMD_AT_U2DIAG:
 			case CMD_AT_CGMI:
@@ -217,6 +217,14 @@ static int at_response_ok (struct pvt* pvt, at_res_t res)
 
 			case CMD_AT_CNUM:
 				ast_debug (1, "[%s] Subscriber phone number query successed\n", PVT_ID(pvt));
+
+				if (!pvt->initialized)
+				{
+					pvt->timeout = DATA_READ_TIMEOUT;
+					pvt->initialized = 1;
+					ast_verb (3, "[%s] Quectel initialized and ready\n", PVT_ID(pvt));
+					manager_event_device_status(PVT_ID(pvt), "Initialize");
+				}
 				break;
 
 			case CMD_AT_CVOICE:
@@ -235,7 +243,7 @@ static int at_response_ok (struct pvt* pvt, at_res_t res)
 
                                 static const char cmd_atrcend[] = "AT$QCRCIND=1\r";
                                 static const at_queue_cmd_t cmds1[] = {
-		                ATQ_CMD_DECLARE_STIT(CMD_AT_Z, cmd_atrcend, ATQ_CMD_TIMEOUT_MEDIUM, 0),
+		                ATQ_CMD_DECLARE_STIT(CMD_AT_DSCI, cmd_atrcend, ATQ_CMD_TIMEOUT_MEDIUM, 0),
 		                                                       }; 
 	                        if (at_queue_insert_const(&pvt->sys_chan, cmds1, ITEMS_OF(cmds1), 1) != 0) {
 		                chan_quectel_err = E_QUEUE;
@@ -271,14 +279,6 @@ static int at_response_ok (struct pvt* pvt, at_res_t res)
 				ast_debug (1, "[%s] Quectel has sms support\n", PVT_ID(pvt));
 
 				pvt->has_sms = 1;
-
-				if (!pvt->initialized)
-				{
-					pvt->timeout = DATA_READ_TIMEOUT;
-					pvt->initialized = 1;
-					ast_verb (3, "[%s] Quectel initialized and ready\n", PVT_ID(pvt));
-					manager_event_device_status(PVT_ID(pvt), "Initialize");
-				}
 				break;
 
 			case CMD_AT_D:
@@ -429,7 +429,7 @@ static int at_response_error (struct pvt* pvt, at_res_t res)
 		{
 			/* critical errors */
 			case CMD_AT:
-			case CMD_AT_Z:
+			case CMD_AT_DSCI:
 			case CMD_AT_E:
 			case CMD_AT_CLCC:
 				log_cmd_response_error(pvt, ecmd, "[%s] Command '%s' failed\n", PVT_ID(pvt), at_cmd2str (ecmd->cmd));
