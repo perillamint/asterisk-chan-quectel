@@ -98,7 +98,7 @@ struct pvt *get_pvt(const char *dev_name, int online)
 	struct pvt *pvt;
 	pvt = find_device_ext(dev_name);
 	if (pvt) {
-		if (pvt->connected && (!online || (pvt->initialized && pvt->gsm_registered))) {
+		if (pvt->connected && (!online || pvt->initialized)) {
 			return pvt;
 		}
 		free_pvt(pvt);

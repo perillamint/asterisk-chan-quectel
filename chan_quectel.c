@@ -1129,7 +1129,6 @@ EXPORT_DEF int ready4voice_call(const struct pvt* pvt, const struct cpvt * curre
 	if(!pvt->connected
 		|| !pvt->initialized
 		|| !pvt->has_voice
-		|| !pvt->gsm_registered
 		|| !pvt_enabled(pvt)) {
 		return 0;
 	}
@@ -1431,8 +1430,6 @@ static const char * pvt_state_base(const struct pvt * pvt)
 		state = "Not connected";
 	else if(!pvt->initialized)
 		state = "Not initialized";
-	else if(!pvt->gsm_registered)
-		state = "GSM not registered";
 	return state;
 }
 
