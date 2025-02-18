@@ -118,7 +118,7 @@ EXPORT_DEF int at_enqueue_initialization(struct cpvt *cpvt, at_cmd_t from_comman
 	static const char cmd7[] = "AT+CGMM\r";
 	static const char cmd8[] = "AT+CGMR\r";
 
-//	static const char cmd9[] = "AT+CMEE=0\r";
+	static const char cmd9[] = "AT+CMEE=0\r";
 	static const char cmd10[] = "AT+CGSN\r";
 	static const char cmd11[] = "AT+CIMI\r";
 	static const char cmd12[] = "AT+CPIN?\r";
@@ -148,7 +148,7 @@ EXPORT_DEF int at_enqueue_initialization(struct cpvt *cpvt, at_cmd_t from_comman
 
 		ATQ_CMD_DECLARE_ST(CMD_AT_CGMM, cmd7),		/* Get Product name */
 		ATQ_CMD_DECLARE_ST(CMD_AT_CGMR, cmd8),		/* Get software version */
-//		ATQ_CMD_DECLARE_ST(CMD_AT_CMEE, cmd9),		/* set MS Error Report to 'ERROR' only  TODO: change to 1 or 2 and add support in response handlers */
+		ATQ_CMD_DECLARE_ST(CMD_AT_CMEE, cmd9),		/* set MS Error Report to 'ERROR' only  TODO: change to 1 or 2 and add support in response handlers */
 
 		ATQ_CMD_DECLARE_ST(CMD_AT_CGSN, cmd10),		/* IMEI Read */
 		ATQ_CMD_DECLARE_ST(CMD_AT_CIMI, cmd11),		/* IMSI Read */
