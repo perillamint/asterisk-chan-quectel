@@ -50,6 +50,9 @@ struct iovec;
 	_( OK,          "OK",           "OK\r") \
 	_( CONF,        "^CONF",        "MISSED_CALL:") \
 	_( RING,        "RING",         "RING\r") \
+	_( RING_DS,     "RING DS",      "RING DS\r") \
+	_( RING0,       "RING##0",      "RING##0\r") \
+	_( RING1,       "RING##1",      "RING##1\r") \
 \
 	_( RSSI,        "^RSSI",        "^RSSI:") \
 	_( SMMEMFULL,   "^SMMEMFULL",   "^SMMEMFULL:") \

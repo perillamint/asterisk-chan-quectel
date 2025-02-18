@@ -2133,6 +2133,9 @@ int at_response (struct pvt* pvt, const struct iovec iov[2], int iovcnt, at_res_
 				return at_response_error (pvt, at_res);
 
 			case RES_RING:
+			case RES_RING_DS:
+			case RES_RING0:
+			case RES_RING1:
 				return at_response_ring (pvt);
 
 			case RES_SMMEMFULL:
