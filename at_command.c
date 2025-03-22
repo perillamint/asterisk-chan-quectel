@@ -847,7 +847,7 @@ EXPORT_DEF int at_enqueue_retrieve_mms(struct cpvt *cpvt, const char *mms_trxid,
 		goto error;
 
 	/* Todo: free incoming mms pvt values */
-	ast_verb(10, "[%s] %s: Send AT+QHTTPGET req");
+	ast_verb(10, "[%s] %s: Send AT+QHTTPGET req", PVT_ID(pvt), __func__);
 
 	err = at_queue_insert (cpvt, cmds, cmdsno, 0);
 	if (err)

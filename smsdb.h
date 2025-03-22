@@ -19,5 +19,6 @@ EXPORT_DECL ssize_t smsdb_outgoing_clear(int uid, char *dst, char *payload);
 EXPORT_DECL ssize_t smsdb_outgoing_part_put(int uid, int refid, char *dst, char *payload);
 EXPORT_DECL ssize_t smsdb_outgoing_part_status(const char *id, const char *addr, int mr, int st, int *status_all, char *payload);
 EXPORT_DECL ssize_t smsdb_outgoing_purge_one(char *dst, char *payload);
+EXPORT_DECL int smsdb_mms_put(const char *imsi, const char *trx_id, const char *location, const char *subject);
 
 #endif

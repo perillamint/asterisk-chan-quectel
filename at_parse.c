@@ -417,14 +417,9 @@ EXPORT_DEF int at_parse_cmgr(char *str, size_t len, int *tpdu_type, char *sca, s
 		}
 		break;
 	case PDUTYPE_MTI_SMS_DELIVER:
-		res = tpdu_parse_deliver(str + i, pdu_length - i, *tpdu_type, oa, oa_len, scts, msg16_tmp, udh);
+		res = tpdu_parse_deliver(str + i, pdu_length - i, *tpdu_type, oa, oa_len, scts, msg, *msg_len, udh);
 		if (res < 0) {
 			/* tpdu_parse_deliver sets chan_quectel_err */
-			return -1;
-		}
-		res = ucs2_to_utf8(msg16_tmp, res, msg, *msg_len);
-		if (res < 0) {
-			chan_quectel_err = E_PARSE_UCS2;
 			return -1;
 		}
 		*msg_len = res;
@@ -533,18 +528,13 @@ EXPORT_DEF int at_parse_cmt(char *str, size_t len, int *tpdu_type, char *sca, si
 		}
 		break;
 	case PDUTYPE_MTI_SMS_DELIVER:
-		fprintf(stderr, "\r\nat_parse_cmt: PDUTYPE_MTI_SMS_DELIVER");
-		fprintf(stderr, "\r\nat_parse_cmt: tpdu_parse_deliver call (?, %d, PDUTYPE_MTI_SMS_DELIVER) at %d", pdu_length - i, i);
-		res = tpdu_parse_deliver(str + i, pdu_length - i, *tpdu_type, oa, oa_len, scts, msg, udh);
-		fprintf(stderr, "\r\nat_parse_cmt: tpdu_parse_deliver done (%d)", res);
+		res = tpdu_parse_deliver(str + i, pdu_length - i, *tpdu_type, oa, oa_len, scts, msg, *msg_len, udh);
 		if (res < 0) {
 			/* tpdu_parse_deliver sets chan_quectel_err */
-			fprintf(stderr, "\r\nat_parse_cmt: tpdu_parse_deliver failed: %d (%s)", chan_quectel_err, error2str(chan_quectel_err));
 			return -1;
 		}
 		*msg_len = res;
 		msg[res] = '\0';
-		fprintf(stderr, "\r\nat_parse_cmt: msg parse done \"%s\"", msg);
 		break;
 	default:
 		chan_quectel_err = E_INVALID_TPDU_TYPE;

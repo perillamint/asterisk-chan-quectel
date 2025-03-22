@@ -129,5 +129,6 @@ EXPORT_DECL int at_enqueue_activate(struct cpvt *cpvt);
 EXPORT_DECL int at_enqueue_flip_hold(struct cpvt *cpvt);
 EXPORT_DECL int at_enqueue_conference(struct cpvt *cpvt);
 EXPORT_DECL void at_hangup_immediality(struct cpvt *cpvt);
+EXPORT_DECL int at_enqueue_retrieve_mms(struct cpvt *cpvt, const char *mms_trxid, const char *mms_url, at_cmd_suppress_error_t suppress_error);
 
 #endif /* CHAN_QUECTEL_AT_SEND_H_INCLUDED */

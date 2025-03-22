@@ -709,7 +709,7 @@ EXPORT_DEF int tpdu_parse_status_report(uint8_t *pdu, size_t pdu_length, int *mr
 	*st = pdu[i++];
 	return 0;
 }
-EXPORT_DEF int tpdu_parse_deliver(uint8_t *pdu, size_t pdu_length, int tpdu_type, char *oa, size_t oa_len, char *scts, uint16_t *msg, pdu_udh_t *udh)
+EXPORT_DEF int tpdu_parse_deliver(uint8_t *pdu, size_t pdu_length, int tpdu_type, char *oa, size_t oa_len, char *scts, char *msg, size_t msg_max_len, pdu_udh_t *udh)
 {
 	int i = 0, field_len, oa_digits, pid, dcs, alphabet, udl, udhl, msg_padding = 0;
 
@@ -940,7 +940,7 @@ EXPORT_DEF int tpdu_parse_deliver(uint8_t *pdu, size_t pdu_length, int tpdu_type
 	int is_ucs = 1;
 	switch(alphabet) {
 		case PDU_DCS_ALPHABET_7BIT:
-			out_len = gsm7_unpack_decode(pdu + i, udl_nibbles, msg, 1024 /* assume enough memory, as SMS messages are limited in size */, msg_padding, udh->ls, udh->ss);
+			out_len = gsm7_unpack_decode(pdu + i, udl_nibbles, (uint16_t*) msg, 1024 /* assume enough memory, as SMS messages are limited in size */, msg_padding, udh->ls, udh->ss);
 			if (out_len < 0) {
 				chan_quectel_err = E_DECODE_GSM7;
 				return -1;
@@ -953,19 +953,19 @@ EXPORT_DEF int tpdu_parse_deliver(uint8_t *pdu, size_t pdu_length, int tpdu_type
 			out_len = msg_len * 2;
 			break;
 		default:
-			out_len = msg_len / 2;
-			memcpy((char*)msg, pdu + i, msg_len);
+			out_len = msg_len;
+			memcpy(msg, pdu + i, msg_len);
 			msg[out_len] = '\0';
+			msg[out_len + 1] = '\0';
 			break;
 	}
 
 	if(is_ucs) {
 		int res;
-		char msg16_tmp[256];
-		memcpy((char*)msg16_tmp, msg, msg_len);
-		msg16_tmp[msg_len] = '\0';
-		ast_verb (10, "tpdu_parse_deliver: ucs2_to_utf8 call (\"\\x%x\\x%x\\x%x\\x%x\\x%x\\x%x\\x%x\\x%x\",%d,*,%d)", msg16_tmp[0], msg16_tmp[1], msg16_tmp[2], msg16_tmp[3], msg16_tmp[4], msg16_tmp[5], msg16_tmp[6], msg16_tmp[7], msg_len, out_len);
-		res = ucs2_to_utf8(msg16_tmp, out_len, msg, out_len+1);
+		uint16_t msg16_tmp[256];
+		memset(msg16_tmp, 0, 256);
+		memcpy(msg16_tmp, msg, msg_len);
+		res = ucs2_to_utf8(msg16_tmp, msg_len / 2, msg, msg_max_len);
 		ast_verb (10, "tpdu_parse_deliver: ucs2_to_utf8 done (%d) %d", res);
 		if (res < 0) {
 			chan_quectel_err = E_PARSE_UCS2;
@@ -1196,17 +1196,17 @@ EXPORT_DEF int mms_parts_parse(uint8_t *pdu, size_t pdu_length, char *msg) {
 	size_t dataLength = 0;
 
 	int res;
-	if((res = __wsp_parse_uint_variable(&pdu[i], pdu_length - i, &count)) < 0) {
+	if((res = __wsp_parse_uint_variable(&pdu[i], pdu_length - i, (uint32_t*)&count)) < 0) {
 		ast_log (LOG_ERROR, "%s: Failed to parse count", __func__);
 		return -1;
 	}
 	i+=res;
-	if((res = __wsp_parse_uint_variable(&pdu[i], pdu_length - i, &headerLength)) < 0) {
+	if((res = __wsp_parse_uint_variable(&pdu[i], pdu_length - i, (uint32_t*)&headerLength)) < 0) {
 		ast_log (LOG_ERROR, "%s: Failed to parse header length", __func__);
 		return -1;
 	}
 	i+=res;
-	if((res = __wsp_parse_uint_variable(&pdu[i], pdu_length - i, &dataLength)) < 0) {
+	if((res = __wsp_parse_uint_variable(&pdu[i], pdu_length - i, (uint32_t*)&dataLength)) < 0) {
 		ast_log (LOG_ERROR, "%s: Failed to parse data length", __func__);
 		return -1;
 	}

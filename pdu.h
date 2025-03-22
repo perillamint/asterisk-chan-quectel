@@ -45,7 +45,7 @@ EXPORT_DECL ssize_t pdu_build(uint8_t* buffer, size_t length, size_t *tpdulen, c
 EXPORT_DECL int pdu_parse_sca(uint8_t *pdu, size_t pdu_length, char *sca, size_t sca_len);
 EXPORT_DECL int tpdu_parse_type(uint8_t *pdu, size_t pdu_length, int *type);
 EXPORT_DECL int tpdu_parse_status_report(uint8_t *pdu, size_t pdu_length, int *mr, char *ra, size_t ra_len, char *scts, char *dt, int *st);
-EXPORT_DECL int tpdu_parse_deliver(uint8_t *pdu, size_t pdu_length, int tpdu_type, char *oa, size_t oa_len, char *scts, uint16_t *msg, pdu_udh_t *udh);
+EXPORT_DECL int tpdu_parse_deliver(uint8_t *pdu, size_t pdu_length, int tpdu_type, char *oa, size_t oa_len, char *scts, char *msg, size_t msg_len, pdu_udh_t *udh);
 EXPORT_DECL int wsp_parse(uint8_t *pdu, size_t pdu_length, uint16_t dst_port, uint16_t src_port, char *oa, char *mms_trxid, char *mms_url, char *msg);
 EXPORT_DECL int mms_parse(uint8_t *pdu, size_t pdu_length, char *oa, char *mms_trxid, char *mms_url, char *msg);
 
