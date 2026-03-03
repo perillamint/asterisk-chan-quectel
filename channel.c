@@ -1271,6 +1271,7 @@ static int channel_indicate (struct ast_channel* channel, int condition, const v
 		case AST_CONTROL_SRCUPDATE:
 #if ASTERISK_VERSION_NUM >= 110000 /* 11+ */
 		case AST_CONTROL_PVT_CAUSE_CODE:
+		case AST_CONTROL_CONNECTED_LINE:
 #endif /* ^11+ */
 			break;
 
