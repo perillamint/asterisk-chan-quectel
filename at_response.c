@@ -2296,6 +2296,10 @@ int at_response (struct pvt* pvt, const struct iovec iov[2], int iovcnt, at_res_
 	if(iov[0].iov_len + iov[1].iov_len > 0)
 	{
 		len = iov[0].iov_len + iov[1].iov_len - 1;
+		if (at_res == RES_CONNECT) {
+			// I have no fucking idea why this happens
+			len += 1;
+		}
 
 		if (iovcnt == 2)
 		{
